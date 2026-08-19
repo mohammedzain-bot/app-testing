@@ -3,6 +3,11 @@
     "name": "ServeNow",
     "slug": "servenow-customer",
     "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "8b11d7ad-5fdd-443d-b03a-38b5a7325e6b"
+      }
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "servenow",
