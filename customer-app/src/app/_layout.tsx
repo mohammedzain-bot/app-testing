@@ -1,7 +1,17 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+
+const BACKEND = 'https://servenow-backend-16sw.onrender.com';
 
 export default function RootLayout() {
+  // Pre-warm the Render backend the moment the app opens.
+  // This way, by the time the user fills in their email and
+  // taps "Send OTP", the server is already awake and ready.
+  useEffect(() => {
+    fetch(BACKEND).catch(() => {});
+  }, []);
+
   return (
     <>
       <StatusBar style="auto" />
