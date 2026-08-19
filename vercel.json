@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "cd customer-app && npm install && npx expo export -p web",
+  "outputDirectory": "customer-app/dist",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
