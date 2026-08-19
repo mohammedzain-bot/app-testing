@@ -11,6 +11,9 @@ const transporter = nodemailer.createTransport({
     user: 'mohamedzain600890@gmail.com',
     pass: process.env.GMAIL_APP_PASSWORD || '', // Must be set in .env
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 // POST /api/auth/send-otp
@@ -44,6 +47,7 @@ authRouter.post('/send-otp', async (req: Request, res: Response) => {
 
     return res.json({ message: 'OTP sent successfully' });
   } catch (err: any) {
+    console.error('Email sending failed:', err);
     return res.status(500).json({ error: err.message });
   }
 });
