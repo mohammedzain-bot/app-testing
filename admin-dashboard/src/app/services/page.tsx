@@ -17,7 +17,7 @@ export default function ServicesPage() {
 
   async function fetchCategories() {
     try {
-      const res = await axios.get('http://localhost:3000/api/categories');
+      const res = await axios.get('https://servenow-backend-16sw.onrender.com/api/categories');
       setCategories(res.data);
     } catch (err) {
       console.error(err);
@@ -34,7 +34,7 @@ export default function ServicesPage() {
     e.preventDefault();
     if (!newCategoryName || !newCategoryIcon) return;
     try {
-      await axios.post('http://localhost:3000/api/categories', {
+      await axios.post('https://servenow-backend-16sw.onrender.com/api/categories', {
         name: newCategoryName,
         iconUrl: newCategoryIcon,
       });
@@ -50,7 +50,7 @@ export default function ServicesPage() {
     e.preventDefault();
     if (!selectedCatId || !newServiceName) return;
     try {
-      await axios.post('http://localhost:3000/api/services', {
+      await axios.post('https://servenow-backend-16sw.onrender.com/api/services', {
         name: newServiceName,
         categoryId: selectedCatId,
       });

@@ -12,11 +12,8 @@ const COLORS = {
   background: '#F8F9FE', border: '#E5E7EB',
 };
 
-// On Vercel/web the backend needs to be deployed too.
-// For local testing use: http://localhost:3000/api
-const API_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-  ? null  // Backend not yet deployed to cloud
-  : 'http://localhost:3000/api';
+// Backend deployed on Render
+const API_URL = 'https://servenow-backend-16sw.onrender.com/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,15 +28,6 @@ export default function LoginPage() {
       return;
     }
 
-    if (!API_URL) {
-      Alert.alert(
-        '⚠️ Backend Not Deployed',
-        'The backend server is only running on your local computer right now.\n\nPlease open http://localhost:8081 on your PC to test the full login flow.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    
     setLoading(true);
     try {
       await axios.post(`${API_URL}/auth/send-otp`, { email });

@@ -10,7 +10,7 @@ export default function BookingsPage() {
 
   async function fetchBookings() {
     try {
-      const res = await axios.get('http://localhost:3000/api/admin/bookings');
+      const res = await axios.get('https://servenow-backend-16sw.onrender.com/api/admin/bookings');
       setBookings(res.data);
     } catch (err) {
       console.error(err);

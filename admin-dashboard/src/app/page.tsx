@@ -20,8 +20,8 @@ export default function DashboardPage() {
     async function fetchData() {
       try {
         const [statsRes, revRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/admin/stats'),
-          axios.get('http://localhost:3000/api/admin/revenue')
+          axios.get('https://servenow-backend-16sw.onrender.com/api/admin/stats'),
+          axios.get('https://servenow-backend-16sw.onrender.com/api/admin/revenue')
         ]);
         setStats(statsRes.data);
         setRevenue(revRes.data.reverse()); // Show oldest to newest

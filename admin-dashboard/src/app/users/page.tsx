@@ -10,7 +10,7 @@ export default function UsersPage() {
 
   async function fetchUsers() {
     try {
-      const res = await axios.get('http://localhost:3000/api/admin/users');
+      const res = await axios.get('https://servenow-backend-16sw.onrender.com/api/admin/users');
       setUsers(res.data);
     } catch (err) {
       console.error(err);
@@ -27,7 +27,7 @@ export default function UsersPage() {
     if (!confirm(`Are you sure you want to ${currentStatus ? 'revoke verification' : 'verify'} this provider?`)) return;
     
     try {
-      await axios.put(`http://localhost:3000/api/admin/providers/${profileId}/verify`, {
+      await axios.put(`https://servenow-backend-16sw.onrender.com/api/admin/providers/${profileId}/verify`, {
         isVerified: !currentStatus
       });
       fetchUsers(); // Refresh list

@@ -1,5 +1,5 @@
 // API base - change to your backend URL
-export const API_BASE = 'http://localhost:3000/api';
+export const API_BASE = 'https://servenow-backend-16sw.onrender.com/api';
 
 export const COLORS = {
   primary: '#6C63FF',
