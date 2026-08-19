@@ -26,6 +26,14 @@ model User {
   reviewsReceived    Review[]  @relation("ReviewSubject")
 }
 
+model VerificationCode {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model ProviderProfile {
   id             String    @id @default(uuid())
   userId         String    @unique

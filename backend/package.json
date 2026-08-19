@@ -16,12 +16,14 @@
     "@prisma/client": "^5.13.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.5"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "@types/nodemailer": "^8.0.1",
     "nodemon": "^3.1.14",
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",

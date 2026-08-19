@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar,
-  KeyboardAvoidingView, Platform, ScrollView,
+  KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
 
 const COLORS = {
   primary: '#6C63FF', primaryLight: '#EEF0FF',
@@ -11,19 +12,55 @@ const COLORS = {
   background: '#F8F9FE', border: '#E5E7EB',
 };
 
+// Use localhost for local dev. On Android emulator use 10.0.2.2.
+const API_URL = 'http://localhost:3000/api'; 
+
 export default function LoginPage() {
   const router = useRouter();
-  const [phone, setPhone] = useState('');
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [email, setEmail] = useState('');
+  const [step, setStep] = useState<'email' | 'otp'>('email');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
 
-  function handleSendOtp() {
-    if (phone.length < 10) return;
-    setStep('otp');
+  async function handleSendOtp() {
+    if (!email || !email.includes('@')) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/auth/send-otp`, { email });
+      setStep('otp');
+    } catch (err: any) {
+      Alert.alert('Error', err.response?.data?.error || err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleVerifyOtp() {
-    router.replace('/home');
+  async function handleVerifyOtp() {
+    const code = otp.join('');
+    if (code.length !== 6) {
+      Alert.alert('Invalid OTP', 'Please enter all 6 digits.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/auth/verify-otp`, { 
+        email, 
+        code,
+        role: 'CUSTOMER' 
+      });
+      // Store user token/info in real app here
+      console.log('Login success:', res.data);
+      router.replace('/home');
+    } catch (err: any) {
+      Alert.alert('Error', err.response?.data?.error || err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -40,28 +77,25 @@ export default function LoginPage() {
 
       <View style={styles.card}>
         <ScrollView showsVerticalScrollIndicator={false}>
-        {step === 'phone' ? (
+        {step === 'email' ? (
           <>
             <Text style={styles.cardTitle}>Welcome Back 👋</Text>
-            <Text style={styles.cardSubtitle}>Login with your mobile number</Text>
+            <Text style={styles.cardSubtitle}>Login with your email address</Text>
 
             <View style={styles.phoneRow}>
-              <View style={styles.countryCode}>
-                <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
-              </View>
               <TextInput
-                style={styles.phoneInput}
-                placeholder="Mobile Number"
+                style={styles.emailInput}
+                placeholder="Email Address"
                 placeholderTextColor={COLORS.textLight}
-                keyboardType="phone-pad"
-                maxLength={10}
-                value={phone}
-                onChangeText={setPhone}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
 
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleSendOtp}>
-              <Text style={styles.primaryBtnText}>Send OTP</Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleSendOtp} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Send OTP</Text>}
             </TouchableOpacity>
 
             <Text style={styles.orText}>— or —</Text>
@@ -80,11 +114,11 @@ export default function LoginPage() {
           </>
         ) : (
           <>
-            <TouchableOpacity onPress={() => setStep('phone')}>
-              <Text style={{ color: COLORS.primary, fontSize: 13, marginBottom: 10 }}>← Change Number</Text>
+            <TouchableOpacity onPress={() => setStep('email')}>
+              <Text style={{ color: COLORS.primary, fontSize: 13, marginBottom: 10 }}>← Change Email</Text>
             </TouchableOpacity>
             <Text style={styles.cardTitle}>Enter OTP</Text>
-            <Text style={styles.cardSubtitle}>We sent a 6-digit code to +91 {phone}</Text>
+            <Text style={styles.cardSubtitle}>We sent a 6-digit code to {email}</Text>
 
             <View style={styles.otpRow}>
               {otp.map((digit, idx) => (
@@ -103,8 +137,8 @@ export default function LoginPage() {
               ))}
             </View>
 
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleVerifyOtp}>
-              <Text style={styles.primaryBtnText}>Verify & Login</Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={handleVerifyOtp} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Verify & Login</Text>}
             </TouchableOpacity>
           </>
         )}
@@ -130,15 +164,9 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 24, fontWeight: '800', color: COLORS.text, marginBottom: 6 },
   cardSubtitle: { fontSize: 14, color: COLORS.textLight, marginBottom: 24 },
   phoneRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  countryCode: {
-    backgroundColor: COLORS.background, borderRadius: 12,
-    paddingHorizontal: 12, paddingVertical: 14, marginRight: 10,
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  countryCodeText: { fontSize: 14, fontWeight: '700', color: COLORS.text },
-  phoneInput: {
+  emailInput: {
     flex: 1, backgroundColor: COLORS.background, borderRadius: 12,
-    paddingHorizontal: 14, paddingVertical: 14, fontSize: 15, color: COLORS.text,
+    paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: COLORS.text,
     borderWidth: 1, borderColor: COLORS.border,
   },
   primaryBtn: {
