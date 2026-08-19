@@ -19,7 +19,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSendOtp() {
@@ -40,8 +40,7 @@ export default function LoginPage() {
   }
 
   async function handleVerifyOtp() {
-    const code = otp.join('');
-    if (code.length !== 6) {
+    if (otp.length !== 6) {
       Alert.alert('Invalid OTP', 'Please enter all 6 digits.');
       return;
     }
@@ -50,7 +49,7 @@ export default function LoginPage() {
     try {
       const res = await axios.post(`${API_URL}/auth/verify-otp`, { 
         email, 
-        code,
+        code: otp,
         role: 'CUSTOMER' 
       });
       // Store user token/info in real app here
@@ -120,22 +119,15 @@ export default function LoginPage() {
             <Text style={styles.cardTitle}>Enter OTP</Text>
             <Text style={styles.cardSubtitle}>We sent a 6-digit code to {email}</Text>
 
-            <View style={styles.otpRow}>
-              {otp.map((digit, idx) => (
-                <TextInput
-                  key={idx}
-                  style={styles.otpBox}
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  value={digit}
-                  onChangeText={(val) => {
-                    const next = [...otp];
-                    next[idx] = val;
-                    setOtp(next);
-                  }}
-                />
-              ))}
-            </View>
+            <TextInput
+              style={styles.singleOtpBox}
+              keyboardType="number-pad"
+              maxLength={6}
+              value={otp}
+              onChangeText={setOtp}
+              placeholder="••••••"
+              placeholderTextColor="#CBD5E1"
+            />
 
             <TouchableOpacity style={styles.primaryBtn} onPress={handleVerifyOtp} disabled={loading}>
               {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Verify & Login</Text>}
@@ -182,10 +174,18 @@ const styles = StyleSheet.create({
   },
   googleBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.text },
   providerLink: { textAlign: 'center', fontSize: 13, color: COLORS.textLight, marginTop: 8 },
-  otpRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
-  otpBox: {
-    width: 46, height: 54, borderRadius: 12, borderWidth: 2, borderColor: COLORS.border,
-    textAlign: 'center', fontSize: 22, fontWeight: '800', color: COLORS.text,
+  singleOtpBox: {
+    width: '100%',
     backgroundColor: COLORS.background,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    textAlign: 'center',
+    fontSize: 32,
+    fontWeight: '800',
+    color: COLORS.text,
+    letterSpacing: 16,
+    paddingVertical: 16,
+    marginBottom: 24,
   },
 });
