@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+
+model User {
+  id               String    @id @default(uuid())
+  firebaseUid      String?   @unique
+  phone            String?   @unique
+  email            String?   @unique
+  name             String?
+  role             String    @default("CUSTOMER")
+  profilePicture   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  providerProfile  ProviderProfile?
+  bookingsAsCustomer Booking[] @relation("CustomerBookings")
+  bookingsAsProvider Booking[] @relation("ProviderBookings")
+  reviewsGiven       Review[]  @relation("ReviewAuthor")
+  reviewsReceived    Review[]  @relation("ReviewSubject")
+}
+
+model ProviderProfile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isVerified     Boolean   @default(false)
+  experience     Int?
+  bio            String?
+  available      Boolean   @default(true)
+  rating         Float     @default(0.0)
+  totalJobs      Int       @default(0)
+  lat            Float?
+  lng            Float?
+  services       ProviderService[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  iconUrl     String?
+  services    Service[]
+}
+
+model Service {
+  id          String    @id @default(uuid())
+  name        String
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  providerServices ProviderService[]
+}
+
+model ProviderService {
+  id                String          @id @default(uuid())
+  providerProfileId String
+  serviceId         String
+  basePrice         Float
+
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  service           Service         @relation(fields: [serviceId], references: [id])
+
+  @@unique([providerProfileId, serviceId])
+}
+
+model Booking {
+  id               String        @id @default(uuid())
+  customerId       String
+  providerId       String?
+  serviceId        String
+  status           String        @default("REQUESTED")
+  description      String?
+  address          String
+  lat              Float?
+  lng              Float?
+  price            Float?
+  commission       Float?
+  scheduledFor     DateTime?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  customer         User          @relation("CustomerBookings", fields: [customerId], references: [id])
+  provider         User?         @relation("ProviderBookings", fields: [providerId], references: [id])
+  payment          Payment?
+  review           Review?
+}
+
+model Payment {
+  id               String    @id @default(uuid())
+  bookingId        String    @unique
+  amount           Float
+  currency         String    @default("INR")
+  status           String
+  transactionId    String?
+  paymentMethod    String?
+
+  booking          Booking   @relation(fields: [bookingId], references: [id])
+  createdAt        DateTime  @default(now())
+}
+
+model Review {
+  id               String    @id @default(uuid())
+  bookingId        String    @unique
+  authorId         String
+  subjectId        String
+  rating           Int
+  comment          String?
+
+  booking          Booking   @relation(fields: [bookingId], references: [id])
+  author           User      @relation("ReviewAuthor", fields: [authorId], references: [id])
+  subject          User      @relation("ReviewSubject", fields: [subjectId], references: [id])
+  createdAt        DateTime  @default(now())
+}
