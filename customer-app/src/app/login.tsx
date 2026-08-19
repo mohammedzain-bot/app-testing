@@ -12,8 +12,11 @@ const COLORS = {
   background: '#F8F9FE', border: '#E5E7EB',
 };
 
-// Use localhost for local dev. On Android emulator use 10.0.2.2.
-const API_URL = 'http://localhost:3000/api'; 
+// On Vercel/web the backend needs to be deployed too.
+// For local testing use: http://localhost:3000/api
+const API_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+  ? null  // Backend not yet deployed to cloud
+  : 'http://localhost:3000/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +28,15 @@ export default function LoginPage() {
   async function handleSendOtp() {
     if (!email || !email.includes('@')) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+
+    if (!API_URL) {
+      Alert.alert(
+        '⚠️ Backend Not Deployed',
+        'The backend server is only running on your local computer right now.\n\nPlease open http://localhost:8081 on your PC to test the full login flow.',
+        [{ text: 'OK' }]
+      );
       return;
     }
     
@@ -52,7 +64,6 @@ export default function LoginPage() {
         code: otp,
         role: 'CUSTOMER' 
       });
-      // Store user token/info in real app here
       console.log('Login success:', res.data);
       router.replace('/home');
     } catch (err: any) {
@@ -61,6 +72,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
+
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
