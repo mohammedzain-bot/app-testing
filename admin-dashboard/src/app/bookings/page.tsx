@@ -29,8 +29,8 @@ export default function BookingsPage() {
     <div>
       <h1 className="text-3xl font-bold mb-8">All Bookings</h1>
 
-      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm">
+      <div className="bg-white rounded-2xl border shadow-sm overflow-x-auto">
+        <table className="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
           <thead className="bg-slate-50 border-b text-slate-500 font-medium">
             <tr>
               <th className="px-6 py-4">ID / Date</th>

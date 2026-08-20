@@ -18,10 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-50 text-slate-900`}>
+      <body className={`${inter.className} bg-slate-50 text-slate-900 pb-20 md:pb-0`}>
         <Sidebar />
-        <main className="pl-64 min-h-screen">
-          <div className="p-8 max-w-7xl mx-auto">
+        <main className="md:pl-64 min-h-screen">
+          <div className="p-4 md:p-8 max-w-7xl mx-auto">
             {children}
           </div>
         </main>
