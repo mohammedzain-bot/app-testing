@@ -1,0 +1,14 @@
+# Ignore everything outside the customer-app scope
+../backend
+../admin-dashboard
+../.git
+
+# Ignore agent/AI tool folders
+**/.agents
+**/.claude
+**/.gemini
+**/node_modules/.cache
+
+# Ignore unnecessary files
+**/*.log
+**/.env
