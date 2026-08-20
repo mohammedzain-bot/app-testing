@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 
-// Root redirects to login
+// Root redirects directly to home (login bypassed per request)
 export default function Index() {
-  return <Redirect href="/login" />;
+  return <Redirect href="/home" />;
 }
